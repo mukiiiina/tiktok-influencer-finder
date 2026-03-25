@@ -1,6 +1,6 @@
 # TikTok Influencer Finder
 
-A Claude Code skill that helps you discover and research TikTok creators for brand collaborations and influencer marketing campaigns.
+A skill for Claude Code / OpenClaw that helps you discover and research TikTok creators for brand collaborations and influencer marketing campaigns.
 
 ## What It Does
 
@@ -37,7 +37,7 @@ git clone https://github.com/mukiiiina/tiktok-influencer-finder.git ~/.claude/sk
 git clone https://github.com/mukiiiina/tiktok-influencer-finder.git %USERPROFILE%\.claude\skills\tiktok-influencer-finder
 ```
 
-Then restart your Claude Code session. The skill will be auto-loaded.
+Then restart your Claude Code / OpenClaw session. The skill will be auto-loaded.
 
 ### Method 2: Ask your OpenClaw bot to install
 
@@ -49,7 +49,7 @@ Please install this TikTok influencer finder skill: clone https://github.com/muk
 
 ### Method 3: Manual installation
 
-Copy the `tiktok-influencer-finder` folder to your Claude Code skills directory:
+Copy the `tiktok-influencer-finder` folder to your Claude Code / OpenClaw skills directory:
 
 - **macOS/Linux**: `~/.claude/skills/`
 - **Windows**: `%USERPROFILE%\.claude\skills\`
