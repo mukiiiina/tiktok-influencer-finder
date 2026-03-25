@@ -12,3 +12,13 @@ build/
 Thumbs.db
 evals/
 *-workspace/
+
+# Security: prevent accidental commit of sensitive files
+.env
+.env.*
+*.key
+*.pem
+*.cert
+*.log
+.vscode/
+.idea/
