@@ -23,20 +23,28 @@ Give it a product description or niche category, and it will:
 
 ## Installation
 
-### Method 1: Install from .skill file
+### Method 1: Clone from GitHub (Recommended)
 
+Clone the repo directly into your Claude Code / OpenClaw skills directory:
+
+**macOS / Linux:**
 ```bash
-claude skill install tiktok-influencer-finder.skill
+git clone https://github.com/mukiiiina/tiktok-influencer-finder.git ~/.claude/skills/tiktok-influencer-finder
 ```
 
-### Method 2: Install from GitHub
-
+**Windows:**
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/tiktok-influencer-finder.git
+git clone https://github.com/mukiiiina/tiktok-influencer-finder.git %USERPROFILE%\.claude\skills\tiktok-influencer-finder
+```
 
-# Install the skill
-claude skill install ./tiktok-influencer-finder
+Then restart your Claude Code session. The skill will be auto-loaded.
+
+### Method 2: Ask your OpenClaw bot to install
+
+Send this message to your OpenClaw bot:
+
+```
+Please install this TikTok influencer finder skill: clone https://github.com/mukiiiina/tiktok-influencer-finder into ~/.claude/skills/tiktok-influencer-finder and run pip install openpyxl
 ```
 
 ### Method 3: Manual installation
