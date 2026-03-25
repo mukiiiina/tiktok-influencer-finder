@@ -23,36 +23,40 @@ Give it a product description or niche category, and it will:
 
 ## Installation
 
-### Method 1: Clone from GitHub (Recommended)
+### Method 1: Tell your bot to install (Recommended)
 
-Clone the repo directly into your Claude Code / OpenClaw skills directory:
+Send this message to your Claude Code or OpenClaw bot:
 
-**macOS / Linux:**
+```
+帮我安装一个TikTok博主搜索的skill，GitHub仓库地址是：
+https://github.com/mukiiiina/tiktok-influencer-finder
+请克隆到你的skills目录下，然后安装依赖 openpyxl
+```
+
+Or in English:
+
+```
+Please install a TikTok influencer finder skill from this repo:
+https://github.com/mukiiiina/tiktok-influencer-finder
+Clone it into your skills directory and install the openpyxl dependency.
+```
+
+The bot will figure out the correct skills directory and handle the installation automatically.
+
+### Method 2: Clone from GitHub manually
+
+Clone the repo into your bot's skills directory (the exact path depends on your platform):
+
 ```bash
-git clone https://github.com/mukiiiina/tiktok-influencer-finder.git ~/.claude/skills/tiktok-influencer-finder
+git clone https://github.com/mukiiiina/tiktok-influencer-finder.git
+pip install openpyxl
 ```
 
-**Windows:**
-```bash
-git clone https://github.com/mukiiiina/tiktok-influencer-finder.git %USERPROFILE%\.claude\skills\tiktok-influencer-finder
-```
+Then restart your bot session. The skill will be auto-loaded.
 
-Then restart your Claude Code / OpenClaw session. The skill will be auto-loaded.
+### Method 3: Download and copy
 
-### Method 2: Ask your OpenClaw bot to install
-
-Send this message to your OpenClaw bot:
-
-```
-Please install this TikTok influencer finder skill: clone https://github.com/mukiiiina/tiktok-influencer-finder into ~/.claude/skills/tiktok-influencer-finder and run pip install openpyxl
-```
-
-### Method 3: Manual installation
-
-Copy the `tiktok-influencer-finder` folder to your Claude Code / OpenClaw skills directory:
-
-- **macOS/Linux**: `~/.claude/skills/`
-- **Windows**: `%USERPROFILE%\.claude\skills\`
+Download this repository as a ZIP, extract it, and place the `tiktok-influencer-finder` folder into your bot's skills directory. Make sure `SKILL.md` is at the root of the folder.
 
 ### Dependencies
 
