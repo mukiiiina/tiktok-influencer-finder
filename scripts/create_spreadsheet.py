@@ -28,8 +28,8 @@ except ImportError:
     sys.exit(1)
 
 
-# Column definitions for the influencer list
-COLUMNS = [
+# Column definitions: (English header, Chinese header, JSON key, column width)
+COLUMNS_EN = [
     ("Creator Name", "name", 25),
     ("TikTok Username", "username", 20),
     ("Profile URL", "profile_url", 40),
@@ -50,6 +50,36 @@ COLUMNS = [
     ("Source", "source", 20),
     ("Notes", "notes", 30),
 ]
+
+COLUMNS_CN = [
+    ("博主名称", "name", 25),
+    ("TikTok用户名", "username", 20),
+    ("主页链接", "profile_url", 40),
+    ("内容领域", "niche", 20),
+    ("粉丝数", "follower_count", 15),
+    ("互动率", "engagement_rate", 15),
+    ("平均播放量", "avg_views", 15),
+    ("发布频率", "posting_frequency", 18),
+    ("内容风格", "content_style", 25),
+    ("联系方式", "contact", 30),
+    ("预估报价", "estimated_pricing", 18),
+    ("受众画像", "audience_demographics", 30),
+    ("品牌合作", "brand_collabs", 30),
+    ("其他平台", "other_platforms", 25),
+    ("个人简介", "bio", 40),
+    ("热门内容", "top_content", 40),
+    ("语言", "language", 12),
+    ("数据来源", "source", 20),
+    ("备注", "notes", 30),
+]
+
+# Default to English
+COLUMNS = COLUMNS_EN
+
+
+def get_columns(lang="en"):
+    """Return column definitions based on language preference."""
+    return COLUMNS_CN if lang.lower() in ("cn", "zh", "chinese") else COLUMNS_EN
 
 # Style definitions
 HEADER_FILL = PatternFill(start_color="1A1A2E", end_color="1A1A2E", fill_type="solid")
@@ -99,10 +129,12 @@ def get_follower_tier(count_str):
         return "nano"
 
 
-def create_xlsx(data, output_path, append=False):
+def create_xlsx(data, output_path, append=False, lang="en"):
     """Create or append to an xlsx file with formatted influencer data."""
     creators = data.get("creators", [])
     brief = data.get("search_brief", {})
+    cols = get_columns(lang)
+    is_cn = lang.lower() in ("cn", "zh", "chinese")
 
     if append and os.path.exists(output_path):
         wb = load_workbook(output_path)
@@ -119,7 +151,7 @@ def create_xlsx(data, output_path, append=False):
         start_row = ws.max_row + 1
         for idx, creator in enumerate(new_creators):
             row_num = start_row + idx
-            for col_idx, (_, key, _) in enumerate(COLUMNS, 1):
+            for col_idx, (_, key, _) in enumerate(cols, 1):
                 val = creator.get(key, "")
                 cell = ws.cell(row=row_num, column=col_idx, value=val)
                 cell.font = DATA_FONT
@@ -133,7 +165,7 @@ def create_xlsx(data, output_path, append=False):
                     cell.hyperlink = val
             tier = get_follower_tier(creator.get("follower_count", ""))
             if tier in TIER_FILLS:
-                for col_idx in range(1, len(COLUMNS) + 1):
+                for col_idx in range(1, len(cols) + 1):
                     ws.cell(row=row_num, column=col_idx).fill = TIER_FILLS[tier]
         wb.save(output_path)
         print(f"Appended {len(new_creators)} new creators to {output_path}")
@@ -145,10 +177,10 @@ def create_xlsx(data, output_path, append=False):
 
     # Sheet 1: Influencer List
     ws = wb.active
-    ws.title = "Influencer List"
+    ws.title = "博主列表" if is_cn else "Influencer List"
 
     # Write headers
-    for col_idx, (header, _, width) in enumerate(COLUMNS, 1):
+    for col_idx, (header, _, width) in enumerate(cols, 1):
         cell = ws.cell(row=1, column=col_idx, value=header)
         cell.font = HEADER_FONT
         cell.fill = HEADER_FILL
@@ -169,7 +201,7 @@ def create_xlsx(data, output_path, append=False):
         row_num = idx + 2
         tier = get_follower_tier(creator.get("follower_count", ""))
 
-        for col_idx, (_, key, _) in enumerate(COLUMNS, 1):
+        for col_idx, (_, key, _) in enumerate(cols, 1):
             val = creator.get(key, "")
             cell = ws.cell(row=row_num, column=col_idx, value=val)
             cell.font = DATA_FONT
@@ -194,22 +226,38 @@ def create_xlsx(data, output_path, append=False):
     ws.row_dimensions[1].height = 35
 
     # Sheet 2: Search Summary
-    ws2 = wb.create_sheet("Search Summary")
+    ws2 = wb.create_sheet("搜索摘要" if is_cn else "Search Summary")
     ws2.column_dimensions["A"].width = 25
     ws2.column_dimensions["B"].width = 60
 
-    summary_items = [
-        ("Search Summary", ""),
-        ("", ""),
-        ("Product/Brand", brief.get("product", "N/A")),
-        ("Target Market", brief.get("target_market", "N/A")),
-        ("Budget Tier", brief.get("budget_tier", "N/A")),
-        ("Content Style", brief.get("content_style", "N/A")),
-        ("Date Generated", brief.get("date_generated", datetime.now().strftime("%Y-%m-%d"))),
-        ("", ""),
-        ("Results Overview", ""),
-        ("Total Creators Found", str(len(creators))),
-    ]
+    if is_cn:
+        summary_items = [
+            ("搜索摘要", ""),
+            ("", ""),
+            ("推广产品/品牌", brief.get("product", "N/A")),
+            ("目标市场", brief.get("target_market", "N/A")),
+            ("预算层级", brief.get("budget_tier", "N/A")),
+            ("内容风格", brief.get("content_style", "N/A")),
+            ("生成日期", brief.get("date_generated", datetime.now().strftime("%Y-%m-%d"))),
+            ("", ""),
+            ("结果概览", ""),
+            ("找到博主总数", str(len(creators))),
+        ]
+        summary_title_keys = ("搜索摘要", "结果概览")
+    else:
+        summary_items = [
+            ("Search Summary", ""),
+            ("", ""),
+            ("Product/Brand", brief.get("product", "N/A")),
+            ("Target Market", brief.get("target_market", "N/A")),
+            ("Budget Tier", brief.get("budget_tier", "N/A")),
+            ("Content Style", brief.get("content_style", "N/A")),
+            ("Date Generated", brief.get("date_generated", datetime.now().strftime("%Y-%m-%d"))),
+            ("", ""),
+            ("Results Overview", ""),
+            ("Total Creators Found", str(len(creators))),
+        ]
+        summary_title_keys = ("Search Summary", "Results Overview")
 
     # Count tiers
     tier_counts = {"macro": 0, "mid": 0, "micro": 0, "nano": 0}
@@ -218,17 +266,17 @@ def create_xlsx(data, output_path, append=False):
         tier_counts[t] += 1
 
     summary_items.extend([
-        ("Macro (1M+)", str(tier_counts["macro"])),
-        ("Mid-Tier (100K-1M)", str(tier_counts["mid"])),
-        ("Micro (10K-100K)", str(tier_counts["micro"])),
-        ("Nano (<10K)", str(tier_counts["nano"])),
+        ("头部博主 (1M+)" if is_cn else "Macro (1M+)", str(tier_counts["macro"])),
+        ("中腰部博主 (100K-1M)" if is_cn else "Mid-Tier (100K-1M)", str(tier_counts["mid"])),
+        ("小博主 (10K-100K)" if is_cn else "Micro (10K-100K)", str(tier_counts["micro"])),
+        ("素人博主 (<10K)" if is_cn else "Nano (<10K)", str(tier_counts["nano"])),
     ])
 
     for idx, (label, value) in enumerate(summary_items, 1):
         cell_a = ws2.cell(row=idx, column=1, value=label)
         cell_b = ws2.cell(row=idx, column=2, value=value)
 
-        if label in ("Search Summary", "Results Overview"):
+        if label in summary_title_keys:
             cell_a.font = SUMMARY_HEADER_FONT
             cell_a.fill = SUMMARY_HEADER_FILL
             cell_b.fill = SUMMARY_HEADER_FILL
@@ -238,15 +286,23 @@ def create_xlsx(data, output_path, append=False):
 
     # Add legend
     legend_start = len(summary_items) + 2
-    ws2.cell(row=legend_start, column=1, value="Color Legend").font = Font(
+    ws2.cell(row=legend_start, column=1, value="颜色图例" if is_cn else "Color Legend").font = Font(
         name="Arial", bold=True, size=11
     )
-    legend_items = [
-        ("Macro (1M+)", "macro"),
-        ("Mid-Tier (100K-1M)", "mid"),
-        ("Micro (10K-100K)", "micro"),
-        ("Nano (<10K)", "nano"),
-    ]
+    if is_cn:
+        legend_items = [
+            ("头部博主 (1M+)", "macro"),
+            ("中腰部博主 (100K-1M)", "mid"),
+            ("小博主 (10K-100K)", "micro"),
+            ("素人博主 (<10K)", "nano"),
+        ]
+    else:
+        legend_items = [
+            ("Macro (1M+)", "macro"),
+            ("Mid-Tier (100K-1M)", "mid"),
+            ("Micro (10K-100K)", "micro"),
+            ("Nano (<10K)", "nano"),
+        ]
     for i, (label, tier) in enumerate(legend_items):
         row = legend_start + 1 + i
         cell = ws2.cell(row=row, column=1, value=label)
@@ -258,11 +314,12 @@ def create_xlsx(data, output_path, append=False):
     print(f"Created {output_path} with {len(creators)} creators")
 
 
-def create_csv(data, output_path):
+def create_csv(data, output_path, lang="en"):
     """Create a CSV file from influencer data."""
     creators = data.get("creators", [])
-    headers = [col[0] for col in COLUMNS]
-    keys = [col[1] for col in COLUMNS]
+    cols = get_columns(lang)
+    headers = [col[0] for col in cols]
+    keys = [col[1] for col in cols]
 
     sorted_creators = sorted(
         creators, key=lambda c: parse_follower_count(c.get("follower_count", "")), reverse=True
@@ -317,6 +374,12 @@ Data format:
     parser.add_argument(
         "--schema", action="store_true", help="Print the expected JSON data schema and exit"
     )
+    parser.add_argument(
+        "--lang", "-l",
+        choices=["en", "cn"],
+        default="en",
+        help="Output language: en=English headers, cn=Chinese headers (default: en)",
+    )
 
     args = parser.parse_args()
 
@@ -361,14 +424,14 @@ Data format:
 
     if args.append:
         output_path = args.output if args.output.endswith(".xlsx") else args.output + ".xlsx"
-        create_xlsx(data, output_path, append=True)
+        create_xlsx(data, output_path, append=True, lang=args.lang)
     else:
         if args.format in ("xlsx", "both"):
             xlsx_path = args.output if args.output.endswith(".xlsx") else args.output + ".xlsx"
-            create_xlsx(data, xlsx_path)
+            create_xlsx(data, xlsx_path, lang=args.lang)
         if args.format in ("csv", "both"):
             csv_path = args.output if args.output.endswith(".csv") else args.output + ".csv"
-            create_csv(data, csv_path)
+            create_csv(data, csv_path, lang=args.lang)
 
 
 if __name__ == "__main__":

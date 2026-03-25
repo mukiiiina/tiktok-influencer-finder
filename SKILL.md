@@ -25,6 +25,7 @@ When the user describes their product or desired influencer type, extract and co
 - **Budget Tier**: Nano (<10K), Micro (10K-100K), Mid-tier (100K-1M), Macro (1M+), or all tiers
 - **Content Style**: Educational, entertainment, review, unboxing, lifestyle, etc.
 - **Language Preference**: English, Chinese, bilingual, or other
+- **Output Language**: Whether the spreadsheet headers and labels should be in Chinese or English. Auto-detect from the user's input language — if they write in Chinese, use `--lang cn`; if English, use `--lang en`.
 
 If the user's request is vague (e.g., "find me some beauty bloggers"), ask one clarifying question that covers the most critical gaps. Don't over-interrogate — make reasonable assumptions and state them.
 
@@ -190,7 +191,11 @@ Fields can be empty strings `""` if information is not available — the script 
 ### Running the Script
 
 ```bash
+# English output (default)
 python scripts/create_spreadsheet.py input_data.json --output influencer_list --format both
+
+# Chinese output (中文表头)
+python scripts/create_spreadsheet.py input_data.json --output influencer_list --format both --lang cn
 ```
 
 This generates:
